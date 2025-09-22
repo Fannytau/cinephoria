@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from datetime import date
+from pydantic import BaseModel, EmailStr, Field
+from datetime import date, datetime
 
 class MovieOut(BaseModel):
     id: int
@@ -10,5 +10,18 @@ class MovieOut(BaseModel):
     rating: float
     poster_url: str
     date_added: date
+    class Config:
+        from_attributes = True
+
+class ReservationIn(BaseModel):
+    name: str = Field(min_length=2, max_length=60)
+    email: EmailStr
+    movie: str
+    date: date
+    seats: int = Field(ge=1, le=10)
+
+class ReservationOut(ReservationIn):
+    id: int
+    created_at: datetime
     class Config:
         from_attributes = True

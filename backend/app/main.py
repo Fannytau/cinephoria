@@ -1,15 +1,16 @@
+from typing import Optional
+
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import date, timedelta
-from typing import Optional  # << important pour Python 3.9
 from .db import Base, engine, SessionLocal
-from .models import Movie
-from .schemas import MovieOut
+from .models import Movie, Reservation
+from .schemas import MovieOut, ReservationIn, ReservationOut
 
 app = FastAPI(title="Cinephoria API")
 
-# Autoriser le front Angular en local
+# CORS pour Angular
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
@@ -18,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Init tables
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -41,3 +43,12 @@ def list_movies(added: Optional[str] = None, db: Session = Depends(get_db)):
     if added == "last_wednesday":
         q = q.filter(Movie.date_added == last_wednesday(date.today()))
     return q.order_by(Movie.id.desc()).all()
+
+@app.post("/reservations", response_model=ReservationOut, status_code=201)
+def create_reservation(payload: ReservationIn, db: Session = Depends(get_db)):
+    # Pydantic v2 => model_dump()
+    r = Reservation(**payload.model_dump())
+    db.add(r)
+    db.commit()
+    db.refresh(r)
+    return r

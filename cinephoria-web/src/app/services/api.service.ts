@@ -12,4 +12,7 @@ export class ApiService {
   getAllMovies() {
     return this.http.get<any[]>(`${this.base}/movies`);
   }
+  postReservation(body: any) {
+    return this.http.post<any>(`${this.base}/reservations`, body);
+  }
 }
