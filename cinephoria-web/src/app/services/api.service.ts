@@ -9,4 +9,7 @@ export class ApiService {
   getLastWednesdayMovies() {
     return this.http.get<any[]>(`${this.base}/movies?added=last_wednesday`);
   }
+  getAllMovies() {
+    return this.http.get<any[]>(`${this.base}/movies`);
+  }
 }
