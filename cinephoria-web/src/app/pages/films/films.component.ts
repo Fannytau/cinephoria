@@ -10,7 +10,6 @@ import { ApiService } from '../../services/api.service';
   <section class="container py-4">
     <h1 class="h4 mb-3">Tous les films</h1>
 
-    <!-- Filtres -->
     <form class="row g-2 align-items-end mb-3">
       <div class="col-sm-6 col-md-4">
         <label class="form-label">Recherche par titre</label>
@@ -24,9 +23,11 @@ import { ApiService } from '../../services/api.service';
         <input id="fav" type="checkbox" class="form-check-input" [(ngModel)]="onlyFav" name="onlyFav" (change)="applyFilters()">
         <label for="fav" class="form-check-label">Favoris seulement</label>
       </div>
+      <div class="col-auto">
+        <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">Réinitialiser</button>
+      </div>
     </form>
 
-    <!-- Liste -->
     <div *ngIf="filtered?.length; else empty" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
       <div class="col" *ngFor="let m of filtered">
         <div class="card h-100">
@@ -71,5 +72,12 @@ export class FilmsComponent implements OnInit {
       (m.rating >= minR) &&
       (this.onlyFav ? m.is_favorite : true)
     );
+  }
+
+  resetFilters() {
+    this.q = '';
+    this.minRating = null;
+    this.onlyFav = false;
+    this.applyFilters();
   }
 }
