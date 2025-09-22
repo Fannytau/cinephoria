@@ -1,0 +1,19 @@
+<section class="container py-4">
+  <h1 class="h4 mb-3">Derniers films ajoutés le mercredi</h1>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" *ngIf="movies?.length; else empty">
+    <div class="col" *ngFor="let m of movies">
+      <div class="card h-100">
+        <img *ngIf="m.poster_url" [src]="m.poster_url" class="card-img-top" [alt]="m.title">
+        <div class="card-body">
+          <h2 class="h6 card-title">{{ m.title }}</h2>
+          <p class="card-text small">{{ m.description }}</p>
+          <div class="d-flex justify-content-between small text-muted">
+            <span>Âge min: {{ m.age_min }}</span>
+            <span>Note: {{ m.rating | number:'1.1-1' }}/5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #empty><p>Aucun film ajouté ce mercredi.</p></ng-template>
+</section>

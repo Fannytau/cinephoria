@@ -1,0 +1,25 @@
+# Node / Angular
+cinephoria-web/node_modules
+cinephoria-web/dist
+cinephoria-web/.angular
+cinephoria-web/.env
+npm-debug.log*
+
+# Python / FastAPI
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Environnements
+.env
+.env.*

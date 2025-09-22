@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg bg-light border-bottom">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">Cinéphoria</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="nav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" routerLink="/">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/reservation">Réservation</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/films">Films</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/contact">Contact</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" href="/login">Se connecter</a>
+        <a class="btn btn-primary" href="/signup">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="flex-grow-1"><router-outlet></router-outlet></main>
+
+<footer class="bg-dark text-white mt-4 py-4">
+  <div class="container small">
+    <div class="row g-2">
+      <div class="col-md"><strong>Adresse</strong><br> 12 rue du Cinéma, 75000 Paris</div>
+      <div class="col-md"><strong>Téléphone</strong><br> 01 23 45 67 89</div>
+      <div class="col-md"><strong>Horaires</strong><br> Lun-Dim : 10:00 – 23:30</div>
+    </div>
+  </div>
+</footer>
