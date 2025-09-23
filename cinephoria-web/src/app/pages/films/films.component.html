@@ -1,4 +1,38 @@
-<!-- (plus utilisé car nous avons mis le template inline dans .ts) -->
-<div class="container py-4">
-  <p class="text-muted">Chargement…</p>
-</div>
+<section class="container py-4">
+  <h1 class="h4">Tous les films</h1>
+
+  <div class="row g-3 my-2">
+    <div class="col-md-4">
+      <input class="form-control" placeholder="ex: Eau"
+             [ngModel]="q()" (ngModelChange)="q.set($event); load()">
+    </div>
+    <div class="col-md-3">
+      <input class="form-control" type="number" min="0" max="5" step="0.1" placeholder="Note min"
+             [ngModel]="min()" (ngModelChange)="min.set($event ? +$event : null); load()">
+    </div>
+    <div class="col-md-3 d-flex align-items-center gap-2">
+      <input id="fav" type="checkbox" class="form-check-input"
+             [ngModel]="fav()" (ngModelChange)="fav.set($event); load()">
+      <label for="fav" class="form-check-label">Favoris seulement</label>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-muted">Chargement…</div>
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" *ngIf="!loading && movies.length; else empty">
+    <div class="col" *ngFor="let m of movies">
+      <div class="card h-100">
+        <img *ngIf="m.poster_url" [src]="m.poster_url" class="card-img-top" [alt]="m.title" loading="lazy">
+        <div class="card-body">
+          <h2 class="h6 card-title">{{ m.title }}</h2>
+          <p class="card-text small">{{ m.description }}</p>
+          <div class="d-flex justify-content-between small text-muted">
+            <span>Âge min: {{ m.age_min }}</span>
+            <span>Note: {{ m.rating | number:'1.1-1' }}/5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #empty><p class="text-muted">Aucun film.</p></ng-template>
+</section>
