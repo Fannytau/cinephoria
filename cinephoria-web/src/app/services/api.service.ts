@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);
-  private base = 'http://127.0.0.1:8000';
+  private base = 'http://127.0.0.1:8000'\;
 
   getLastWednesdayMovies() {
     return this.http.get<any[]>(`${this.base}/movies?added=last_wednesday`);
@@ -14,5 +14,8 @@ export class ApiService {
   }
   postReservation(body: any) {
     return this.http.post<any>(`${this.base}/reservations`, body);
+  }
+  postContact(body: any) {
+    return this.http.post<any>(`${this.base}/contact`, body);
   }
 }

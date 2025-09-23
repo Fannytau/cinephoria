@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   standalone: true,
@@ -35,7 +36,8 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angula
         <button class="btn btn-outline-secondary" type="button" (click)="reset()">Réinitialiser</button>
       </div>
 
-      <div class="alert alert-success mt-3" *ngIf="ok">Message envoyé (simulation) ✔️</div>
+      <div class="alert alert-success mt-3" *ngIf="ok">Message envoyé ✔️</div>
+      <div class="alert alert-danger mt-3" *ngIf="error">Oups, une erreur est survenue.</div>
     </form>
   </section>
   `
@@ -44,22 +46,26 @@ export class ContactComponent {
   form!: FormGroup;
   sending = false;
   ok = false;
+  error = false;
   readonly defaults = { name: '', email: '', message: '' };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private api: ApiService) {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(60)]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]] ,
       message: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
     });
   }
 
   t(c: string) { const ctrl = this.form.get(c)!; return ctrl.touched && ctrl.invalid; }
-  reset(){ this.form.reset(this.defaults); this.ok = false; }
+  reset(){ this.form.reset(this.defaults); this.ok = this.error = false; }
 
   submit(){
     if (this.form.invalid){ this.form.markAllAsTouched(); return; }
-    this.sending = true; this.ok = false;
-    setTimeout(()=>{ this.sending = false; this.ok = true; }, 600); // mock
+    this.sending = true; this.ok = this.error = false;
+    this.api.postContact(this.form.value).subscribe({
+      next: () => { this.ok = true; this.sending = false; },
+      error: () => { this.error = true; this.sending = false; }
+    });
   }
 }

@@ -25,3 +25,17 @@ class ReservationOut(ReservationIn):
     created_at: datetime
     class Config:
         from_attributes = True
+
+from pydantic import BaseModel, EmailStr, Field
+from datetime import datetime
+
+class ContactIn(BaseModel):
+    name: str = Field(min_length=2, max_length=60)
+    email: EmailStr
+    message: str = Field(min_length=10, max_length=1000)
+
+class ContactOut(ContactIn):
+    id: int
+    created_at: datetime
+    class Config:
+        from_attributes = True
