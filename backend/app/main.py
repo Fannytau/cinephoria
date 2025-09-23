@@ -38,11 +38,24 @@ def health():
     return {"ok": True}
 
 @app.get("/movies", response_model=list[MovieOut])
-def list_movies(added: Optional[str] = None, db: Session = Depends(get_db)):
-    q = db.query(Movie)
+def list_movies(
+    q: Optional[str] = None,
+    min_rating: Optional[float] = None,
+    fav_only: Optional[bool] = None,
+    added: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    query = db.query(Movie)
     if added == "last_wednesday":
-        q = q.filter(Movie.date_added == last_wednesday(date.today()))
-    return q.order_by(Movie.id.desc()).all()
+        query = query.filter(Movie.date_added == last_wednesday(date.today()))
+    if q:
+        like = f"%{q.strip()}%"
+        query = query.filter(Movie.title.ilike(like))
+    if min_rating is not None:
+        query = query.filter(Movie.rating >= float(min_rating))
+    if fav_only:
+        query = query.filter(Movie.is_favorite.is_(True))
+    return query.order_by(Movie.id.desc()).all()
 
 @app.post("/reservations", response_model=ReservationOut, status_code=201)
 def create_reservation(payload: ReservationIn, db: Session = Depends(get_db)):
