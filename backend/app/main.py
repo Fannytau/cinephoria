@@ -1,16 +1,16 @@
+from datetime import date, timedelta
 from typing import Optional
-
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from datetime import date, timedelta
+
 from .db import Base, engine, SessionLocal
-from .models import Movie, Reservation
-from .schemas import MovieOut, ReservationIn, ReservationOut
+from .models import Movie, Reservation, ContactMessage
+from .schemas import MovieOut, ReservationIn, ReservationOut, ContactIn, ContactOut
 
 app = FastAPI(title="Cinephoria API")
 
-# CORS pour Angular
+# CORS pour le front
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Init tables
+# Crée les tables si besoin (inclut ContactMessage)
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -37,31 +37,40 @@ def last_wednesday(today: date) -> date:
 def health():
     return {"ok": True}
 
+# ----- Movies -----
 @app.get("/movies", response_model=list[MovieOut])
 def list_movies(
+    added: Optional[str] = None,
     q: Optional[str] = None,
     min_rating: Optional[float] = None,
     fav_only: Optional[bool] = None,
-    added: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     query = db.query(Movie)
     if added == "last_wednesday":
         query = query.filter(Movie.date_added == last_wednesday(date.today()))
     if q:
-        like = f"%{q.strip()}%"
-        query = query.filter(Movie.title.ilike(like))
+        query = query.filter(Movie.title.ilike(f"%{q}%"))
     if min_rating is not None:
         query = query.filter(Movie.rating >= float(min_rating))
     if fav_only:
         query = query.filter(Movie.is_favorite.is_(True))
     return query.order_by(Movie.id.desc()).all()
 
+# ----- Reservations -----
 @app.post("/reservations", response_model=ReservationOut, status_code=201)
 def create_reservation(payload: ReservationIn, db: Session = Depends(get_db)):
-    # Pydantic v2 => model_dump()
     r = Reservation(**payload.model_dump())
     db.add(r)
     db.commit()
     db.refresh(r)
     return r
+
+# ----- Contact -----
+@app.post("/contact", response_model=ContactOut, status_code=201)
+def create_contact(payload: ContactIn, db: Session = Depends(get_db)):
+    msg = ContactMessage(**payload.model_dump())
+    db.add(msg)
+    db.commit()
+    db.refresh(msg)
+    return msg
